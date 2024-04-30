@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {}
 
-# NOTE: We still need to add this to the EKS admin role
-# else won't be able to access the AWS EKS CONSOLE even after adding access rules
+# NOTE: This IAM role only allows viewing of resources in EKS console in dashboard
+# Needs a matching mapRole block in aws-auth configmap with cluster role to allow for the resources to be viewed. If applying eks-console-full-access.yaml it only lets you view the resources; need to create other cluster roles to allow for edit access
 data "aws_iam_policy_document" "eks_console_admin_policy" {
   statement {
     effect = "Allow"

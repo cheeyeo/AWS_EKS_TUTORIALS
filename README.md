@@ -126,6 +126,32 @@ metadata:
 
 * IAM best practices recommend that you grant permissions to roles instead of users
 
+  [Viewing Kubernetes Resources]: https://docs.aws.amazon.com/eks/latest/userguide/view-kubernetes-resources.html#view-kubernetes-resources-permissions
+
+  Assuming we have created a `KubernetesAdmin` role in `iam.tf` with the required permissions documented on [Viewing Kubernetes Resources], then we need to create the cluster role and bindings first after the cluster is created before updating the configmap:
+
+  ```
+  kubectl apply -f eks-console-full-access.yaml
+
+  kubectl -n kube-system edit configmap aws-auth
+  ```
+  
+  Add the role ARN under mapRoles section:
+  ```
+  mapRoles: |
+    - groups:
+      - eks-console-dashboard-full-access-group
+      rolearn: arn:aws:iam::<ACCOUNT_ID>:role/KubernetesAdmin-xxxxxxx
+      username: my-console-viewer
+  ```
+
+
+  Note that this only grants access if you assume the role to view and list the resources in the dashboard.
+
+  To be able to edit the resource, we need to create other cluster roles and add it to the mapping...
+
+
+
 
 ### View Kubernetes Resources in Management Console
 
@@ -136,6 +162,8 @@ https://docs.aws.amazon.com/eks/latest/userguide/view-kubernetes-resources.html#
 https://stackoverflow.com/questions/70787520/your-current-user-or-role-does-not-have-access-to-kubernetes-objects-on-this-eks
 
 https://stackoverflow.com/a/75244751
+
+
 
 
 ### Access svc via AWS Application Load Balancer
